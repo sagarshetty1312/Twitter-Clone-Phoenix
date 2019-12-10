@@ -32,7 +32,7 @@ channel.on('shout', function (payload) { // listen to the 'shout' event
 });
 //testing hos this works
 
-
+var username = '';
 //functionality
 $(".rest").hide();
 
@@ -41,12 +41,26 @@ $(".rest").hide();
 //eventlisteners
 
 document.getElementById("login").addEventListener("click", function () {
+    username = $("#inUsername").val()
     channel.push('loginUser', { username: $("#inUsername").val(), password:$("#inPassword").val()})
 });
 
 document.getElementById("register").addEventListener("click", function () {
-    channel.push('registerUser', { username: $("#inUsername").val(), password: $("#inPassword").val() })
+    username = $("#inUsername").val();
+    channel.push('registerUser', { username: $("#inUsername").val(), password: $("#inPassword").val() });
 });
+
+document.getElementById("tweet").addEventListener("click", function(){
+    let tweet = $("#tweetText").val();
+    channel.push('tweet',{username: username, tweet: tweet});
+});
+
+document.getElementById("follow").addEventListener("click",function(){
+    let tofollowUsernmae = $('#toFollowUsername').val();
+    $('#toFollowUsername').val("");
+    channel.push('addFollower',{username: username,toFollow: tofollowUsernmae});
+});
+
 
    
 
@@ -62,7 +76,6 @@ channel.on("Login",function(payload){
 });
 
 channel.on("Registered",function(payload){
-    console.log(payload)
     if (payload["status"] == true) {
         $(".login").hide();
         $(".rest").show();
@@ -70,6 +83,14 @@ channel.on("Registered",function(payload){
         window.alert(payload["response"])
     }
 });
+
+channel.on("updateFollowersList",function(payload){
+
+});
+
+channel.on("updateFollowingList",function(payload){
+
+})
 
 
 

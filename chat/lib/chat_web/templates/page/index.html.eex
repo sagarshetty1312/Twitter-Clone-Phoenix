@@ -20,11 +20,39 @@
       <div class="col-xs-3">
         <input type="text" id="name" class="form-control" placeholder="Your Name" autofocus>
       </div>
-      <div class="col-xs-9">
+      <div class="col-xs-3">
         <input type="text" id="msg" class="form-control" placeholder="Your Message">
       </div>
     </div>
   </div>
+
+  <div class="TweetAndFollow">
+    <div class="row"> 
+      <div class="col-xs-5">
+        <input type="text" id="tweetText" class="form-control" placeholder="Enter Tweet" autofocus>
+        <button class="btn btn-primary" id="tweet" type="submit">Tweet</button>
+      </div>
+      <div class="col-xs-5">
+        <input type="text" id="toFollowUsername" class="form-control" placeholder="Enter Username to follow" autofocus>
+        <button class="btn btn-primary" id="follow" type="submit">Follow</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">    
+    <div class="row">
+      <div class="col-sm-4">
+        <h4> Tweets: </h4>    
+      </div>
+      <div class="col-sm-4">
+        <h4> Followers: </h4>
+      </div>
+      <div class="col-sm-4">
+        <h4> Following: </h4>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 

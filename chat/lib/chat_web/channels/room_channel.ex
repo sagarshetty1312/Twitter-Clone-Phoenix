@@ -34,7 +34,6 @@ defmodule ChatWeb.RoomChannel do
         :ets.insert(:following,{username,[]})
         :ets.insert(:followers,{username,[]})
         :ets.insert(:tweetsMade,{username,[]})
-        :ets.insert(:myHome,{username,[]})
         "User Registered"
       else
         "User already present"

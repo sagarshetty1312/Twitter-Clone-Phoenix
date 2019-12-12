@@ -87,46 +87,74 @@ defmodule DDHandler do
     end
   end
 
+  def updateHome(userId,tweet) do
+    [tuple] = :ets.lookup(:myHome, userId)
+    tweetsList = elem(tuple,1)
+    updatedTweetsList = [tweet | tweetsList]
+    :ets.insert(:myHome,{userId,updatedTweetsList})
+  end
 
 
+  def handle_tweet(userId,tweet) do
+    actualTweet = tweet<>" -Tweet by #{userId}"
+    [tuple] = :ets.lookup(:tweetsMade, userId)
+    tweetsList = elem(tuple,1)
+    updatedTweetsList = [actualTweet | tweetsList]
+    :ets.insert(:tweetsMade,{userId,updatedTweetsList})
 
-  # def handle_cast({:tweet,userId,tweet},state) do
-  #   [tuple] = :ets.lookup(:tweetsMade, userId)
-  #   tweetsList = elem(tuple,1)
-  #   updatedTweetsList = [tweet | tweetsList]
-  #   :ets.insert(:tweetsMade,{userId,updatedTweetsList})
+    updateHome(userId,actualTweet)
+    ChatWeb.RoomChannel.tweetLive(actualTweet, [userId], userId)
 
-  #   followers = get_followers(userId)
-  #   tweetLive(tweet, followers, userId)
-  # #  Enum.each(followers, fn(follower) ->
-  # #       send(follower , {:tweet, [tweet] ++ ["-Tweet from user: "] ++ [user_pid] ++ ["forwarded to follower: "] ++ [follower_pid] })
-  # #      end)
+    followers = get_followers(userId)
+    Enum.each(followers, fn(toUser1) ->
+      updateHome(toUser1,actualTweet)
+    end)
+    ChatWeb.RoomChannel.tweetLive(actualTweet, followers, userId)
 
-  #   #hashtags in tweet
-  #   hashtagsList = Regex.scan(~r/\B#[a-zA-Z0-9_]+/, tweet) |> Enum.concat
-  #   Enum.each(hashtagsList, fn(hashtag)->
-  #     insert_tag(hashtag,tweet)
-  #   end)
+    #hashtags in tweet
+    hashtagsList = Regex.scan(~r/\B#[a-zA-Z0-9_]+/, tweet) |> Enum.concat
+    Enum.each(hashtagsList, fn(hashtag)->
+      insert_tag(hashtag,tweet)
+    end)
 
-  #   mentionsList = Regex.scan(~r/\B@User[0-9]+/, tweet) |> Enum.concat
-  #   Enum.each(mentionsList, fn(mention) ->
-  #     insert_tag(mention,tweet)
-  #   end)
-  #   mentionedUserIds = Enum.map(mentionsList,fn x -> String.slice(x,5..-1) |> String.to_integer end)
-  #   validUserIds = checkForExistence(mentionedUserIds)
-  #   tweetLive(tweet, validUserIds, userId)
-  #   sendAcknowledgement(:userTweet)
-  #   {:noreply,state}
-  # end
+    mentionsList = Regex.scan(~r/\B@[a-zA-Z0-9_]+/, tweet) |> Enum.concat
+    Enum.each(mentionsList, fn(mention) ->
+      insert_tag(mention,tweet)
+    end)
+
+    validUserIds = checkForExistence(mentionsList)
+    Enum.each(validUserIds, fn(toUser) ->
+      updateHome(toUser,actualTweet)
+    end)
+    ChatWeb.RoomChannel.tweetLive(tweet, validUserIds, userId)
+  end
+
+  def checkForExistence([]) do
+    []
+  end
+
+  def checkForExistence(mentionedUserIds) do
+    [head|tail] = mentionedUserIds
+    cond do
+      :ets.lookup(:allUsers, head) == [] -> checkForExistence(tail)
+      true -> [head | checkForExistence(tail)]
+    end
+  end
 
 
-  # def tweetLive(tweet, userList, _userId) do
-  #   Enum.each(userList, fn(toUser) ->
-  #     [{_,_,state}] = :ets.lookup(:allUsers, toUser)
-  #     if state == :online do
-  #       GenServer.cast(String.to_atom("User"<>Integer.to_string(toUser)),{:tweetLive,"User#{toUser} received: "<>tweet})
-  #     end
-  #   end)
-  # end
+  def tweetLive(tweet, userList, _userId) do
+    Enum.each(userList, fn(toUser) ->
+      [tuple] =
+        if :ets.lookup(:userSockets, toUser) == [] do
+          [nil]
+        else
+          :ets.lookup(:userSockets, toUser)
+        end
+      if tuple !=nil do
+        userSocket = elem(tuple,1)
+        #push(userSocket,"LiveTweet",%{username: toUser,tweet: tweet})
+      end
+    end)
+  end
 
 end

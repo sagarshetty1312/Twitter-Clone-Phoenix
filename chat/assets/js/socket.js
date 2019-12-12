@@ -3,7 +3,7 @@ import {Socket} from "phoenix"
 let socket = new Socket("/socket", { params: { token: window.userToken } })
 
 socket.connect()
- 
+
 let channel = socket.channel('room:lobby', {}); // connect to chat "room"
 
 
@@ -69,7 +69,7 @@ document.getElementById('queryButton').addEventListener('click',function(){
 });
 
 
-   
+
 
 
 //responses
@@ -110,6 +110,13 @@ function add_follower(newUser){
     followingList.appendChild(entry);
 }
 
+function addTweet(tweet){
+  var tweetList = document.getElementById("tweetsDisplay");
+  var entry = document.createElement('li');
+  entry.appendChild(document.createTextNode(tweet));
+  tweetList.appendChild(entry);
+}
+
 function add_following(newUser){
     var followingList = document.getElementById("followingDisplay");
     var entry = document.createElement('li');
@@ -119,6 +126,10 @@ function add_following(newUser){
 
 channel.on("updateFollowersList",function(payload){
     add_follower(payload["newuser"]);
+});
+
+channel.on("LiveTweet",function(payload){
+  addTweet(payload["tweet"])
 });
 
 function add_query_results(result) {

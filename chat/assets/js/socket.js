@@ -52,13 +52,20 @@ document.getElementById("register").addEventListener("click", function () {
 
 document.getElementById("tweet").addEventListener("click", function(){
     let tweet = $("#tweetText").val();
+    $("#tweetText").val('')
     channel.push('tweet',{username: username, tweet: tweet});
 });
 
 document.getElementById("follow").addEventListener("click",function(){
     let tofollowUsernmae = $('#toFollowUsername').val();
-    $('#toFollowUsername').val("");
+    $('#toFollowUsername').val('')
     channel.push('addFollower',{username: username,toFollow: tofollowUsernmae});
+});
+
+document.getElementById('queryButton').addEventListener('click',function(){
+    let query = $('#queryTweet').val();
+    $('#queryTweet').val('')
+    channel.push('searchQuery', {username: username, query: query});
 });
 
 
@@ -75,6 +82,18 @@ channel.on("Login",function(payload){
     }
 });
 
+channel.on("displayAllfoll",function(payload){
+    let followersList = payload["followersList"]
+    let followingList = payload["followingList"]
+    followersList.map(function(follower){
+        add_follower(follower)
+    });
+    followingList.map(function(following){
+        add_following(following)
+    });
+
+});
+
 channel.on("Registered",function(payload){
     if (payload["status"] == true) {
         $(".login").hide();
@@ -84,17 +103,52 @@ channel.on("Registered",function(payload){
     }
 });
 
-channel.on("updateFollowersList",function(payload){
+function add_follower(newUser){
+    var followingList = document.getElementById("followersDisplay");
+    var entry = document.createElement('li');
+    entry.appendChild(document.createTextNode(newUser));
+    followingList.appendChild(entry);
+}
 
+function add_following(newUser){
+    var followingList = document.getElementById("followingDisplay");
+    var entry = document.createElement('li');
+    entry.appendChild(document.createTextNode(newUser));
+    followingList.appendChild(entry);
+}
+
+channel.on("updateFollowersList",function(payload){
+    add_follower(payload["newuser"]);
 });
 
-channel.on("updateFollowingList",function(payload){
-    var followersDiv = document.getElementById("followersDisplay");
-    var userP = document.createElement("p");
-    userP.innerText = payload["user"];
-    followersDiv.appendChild(userP)
+function add_query_results(result) {
+    var followingList = document.getElementById("query_display");
+    var entry = document.createElement('li');
+    entry.appendChild(document.createTextNode(result));
+    followingList.appendChild(result);
+}
 
+channel.on("updateFollowingList",function(payload){
+    add_following(payload["newuser"]);
+    // let newUser = payload["newuser"]
+    // var followingList = document.getElementById("followingDisplay");
+    // var entry = document.createElement('li');
+    // entry.appendChild(document.createTextNode(newUser));
+    // followingList.appendChild(entry);
 })
+
+channel.on("queryResult",function(payload){
+    let queryStatus = payload["status"];
+    if (queryStatus == "success") {
+        //success logic
+        console.log(payload["result"]);
+        add_query_results(payload["result"])
+    } else {
+        window.alert(payload["response"])
+    }
+});
+
+
 
 
 

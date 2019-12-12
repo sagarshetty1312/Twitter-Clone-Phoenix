@@ -51,8 +51,12 @@ defmodule ChatWeb.RoomChannel do
     else
       [{username,dbpassword}] = check
       if password == dbpassword do
+        :ets.insert(:userSockets,{username,socket})
         push(socket, "Login", %{status: "success",response: "Login Successfull",username: username})
         #TODO display the tweets when logging in
+        allFollowers = DDHandler.get_followers(username)
+        allFollowing = DDHandler.get_following(username)
+        push(socket, "displayAllfoll", %{followersList: allFollowers,followingList: allFollowing})
       else
         push(socket,"Login",%{status: "failed",response: "Incorrect Password"})
       end
@@ -75,13 +79,20 @@ defmodule ChatWeb.RoomChannel do
   def handle_in("addFollower",payload,socket) do
     username = payload["username"]
     toFollowUsername = payload["toFollow"]
-    DDHandler.add_followers(username,toFollowUsername)
+    response = DDHandler.add_followers(username,toFollowUsername)
     #fix bug
-
-    usernameSocket = DDHandler.getSocket(username)
-    toFollowUsernameSocket =  DDHandler.getSocket(toFollowUsername)
-    push(usernameSocket,"updateFollowingList",%{newuser: toFollowUsername})
-    # push(toFollowUsernameSocket,"updateFollowersList",%{newuser: username})
+    if response == "yes" do
+      usernameSocket = DDHandler.getSocket(username)
+      toFollowUsernameSocket =  DDHandler.getSocket(toFollowUsername)
+      if usernameSocket != nil do
+        IO.inspect toFollowUsername
+        push(usernameSocket,"updateFollowingList",%{newuser: toFollowUsername})
+      end
+      if toFollowUsernameSocket != nil do
+        IO.inspect username
+        push(toFollowUsernameSocket,"updateFollowersList",%{newuser: username})
+      end
+    end
     {:noreply,socket}
   end
 
@@ -89,8 +100,21 @@ defmodule ChatWeb.RoomChannel do
 
   end
 
-  def handle_in("hashtagsAnd mentions",payload,socket) do
-
+  def handle_in("searchQuery",payload,socket) do
+    query = payload["query"]
+    if String.at(query,0) == "@" do
+      #@ logic
+      IO.inspect query
+    end
+    cond do
+      String.at(query,0) in ["@","#"]  ->
+        #@n# logic
+        queryResult = DDHandler.fetchAllMentionsAndHashtags(query)
+        push(socket,"queryResult",%{status: "success",response: "Correct query",result: queryResult})
+      true ->
+        push(socket,"queryResult",%{status: "fail",response: "Invalid Query. Please enter a query with a hashtag or mention"})
+    end
+    {:noreply,socket}
   end
 
 

@@ -68,8 +68,12 @@ defmodule DDHandler do
       if find_matches(current_followers, userId) == [] do
         update_followers_list(tofollowID,userId)
         update_following_list(userId,tofollowID)
+        "yes"
+      else
+        "no"
       end
-
+    else
+      "no"
     end
   end
 

@@ -132,3 +132,6 @@ header nav a {
     margin: 2rem 1rem;
   }
 }
+
+nav ul{height:200px; width:18%;}
+nav ul{overflow:hidden; overflow-y:scroll;}

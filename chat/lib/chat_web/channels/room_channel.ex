@@ -34,6 +34,7 @@ defmodule ChatWeb.RoomChannel do
         :ets.insert(:following,{username,[]})
         :ets.insert(:followers,{username,[]})
         :ets.insert(:tweetsMade,{username,[]})
+        :ets.insert(:myHome,{username,[]})
         "User Registered"
       else
         "User already present"
@@ -68,7 +69,7 @@ defmodule ChatWeb.RoomChannel do
   def handle_in("tweet",payload,socket) do
     username = payload["username"]
     tweet = payload["tweet"]
-
+    DDHandler.handle_tweet(username, tweet)
     {:noreply,socket}
   end
 
@@ -117,6 +118,20 @@ defmodule ChatWeb.RoomChannel do
     {:noreply,socket}
   end
 
+  def tweetLive(tweet, userList, _userId) do
+    Enum.each(userList, fn(toUser) ->
+      [tuple] =
+        if :ets.lookup(:userSockets, toUser) == [] do
+          [nil]
+        else
+          :ets.lookup(:userSockets, toUser)
+        end
+      if tuple !=nil do
+        userSocket = elem(tuple,1)
+        push(userSocket,"LiveTweet",%{username: toUser,tweet: tweet})
+      end
+    end)
+  end
 
 
 end

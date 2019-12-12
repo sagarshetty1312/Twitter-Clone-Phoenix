@@ -54,10 +54,22 @@ defmodule DDHandler do
     end
   end
 
+  def find_matches(current_followers,userId) do
+    Enum.filter(current_followers,fn(follower)->
+      follower == userId
+    end)
+  end
+
+
   def add_followers(userId,tofollowID) do
-    if :ets.lookup(:allUsers, tofollowID) != [] do
-      update_followers_list(tofollowID,userId)
-      update_following_list(userId,tofollowID)
+    if :ets.lookup(:allUsers, tofollowID) != []  do
+      #check if follower is already present
+      current_followers = get_followers(tofollowID)
+      if find_matches(current_followers, userId) == [] do
+        update_followers_list(tofollowID,userId)
+        update_following_list(userId,tofollowID)
+      end
+
     end
   end
 

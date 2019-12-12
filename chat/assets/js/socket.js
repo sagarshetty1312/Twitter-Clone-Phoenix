@@ -89,6 +89,10 @@ channel.on("updateFollowersList",function(payload){
 });
 
 channel.on("updateFollowingList",function(payload){
+    var followersDiv = document.getElementById("followersDisplay");
+    var userP = document.createElement("p");
+    userP.innerText = payload["user"];
+    followersDiv.appendChild(userP)
 
 })
 

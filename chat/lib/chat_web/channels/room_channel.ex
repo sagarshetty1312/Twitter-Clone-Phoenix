@@ -78,9 +78,9 @@ defmodule ChatWeb.RoomChannel do
     DDHandler.add_followers(username,toFollowUsername)
     #fix bug
 
-    # usernameSocket = DDHandler.getSocket(username)
-    # toFollowUsernameSocket =  DDHandler.getSocket(toFollowUsername)
-    # push(usernameSocket,"updateFollowingList",%{newuser: toFollowUsername})
+    usernameSocket = DDHandler.getSocket(username)
+    toFollowUsernameSocket =  DDHandler.getSocket(toFollowUsername)
+    push(usernameSocket,"updateFollowingList",%{newuser: toFollowUsername})
     # push(toFollowUsernameSocket,"updateFollowersList",%{newuser: username})
     {:noreply,socket}
   end

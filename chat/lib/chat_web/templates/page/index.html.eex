@@ -42,13 +42,16 @@
   <div class="container">    
     <div class="row">
       <div class="col-sm-4">
-        <h4> Tweets: </h4>    
+        <h4> Tweets: </h4> 
+           <ol id="tweetsDisplay"></ol>
       </div>
       <div class="col-sm-4">
         <h4> Followers: </h4>
+          <ol id="followersDisplay"></ol>
       </div>
       <div class="col-sm-4">
         <h4> Following: </h4>
+          <ol id="followingDisplay"></ol>
       </div>
     </div>
   </div>

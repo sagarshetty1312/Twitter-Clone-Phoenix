@@ -46,7 +46,7 @@ defmodule ChatWeb.RoomChannel do
   def handle_in("loginUser",payload,socket) do
     username = payload["username"]
     password = payload["password"]
-    check = :ets.lookup(:userTable, username)
+    check = :ets.lookup(:userTable, username) |> IO.inspect
     if check == [] do
       push(socket, "Login", %{status: "failed", response: "User not found. Login failed."})
     else
@@ -89,11 +89,11 @@ defmodule ChatWeb.RoomChannel do
       usernameSocket = DDHandler.getSocket(username)
       toFollowUsernameSocket =  DDHandler.getSocket(toFollowUsername)
       if usernameSocket != nil do
-        IO.inspect toFollowUsername
+        #IO.inspect toFollowUsername
         push(usernameSocket,"updateFollowingList",%{newuser: toFollowUsername})
       end
       if toFollowUsernameSocket != nil do
-        IO.inspect username
+        #IO.inspect username
         push(toFollowUsernameSocket,"updateFollowersList",%{newuser: username})
       end
     end
@@ -131,10 +131,14 @@ defmodule ChatWeb.RoomChannel do
         end
       if tuple !=nil do
         userSocket = elem(tuple,1)
-        push(userSocket,"LiveTweet",%{username: toUser,tweet: tweet})
+        if userSocket !=[] do
+          push(userSocket,"LiveTweet",%{username: toUser,tweet: tweet})
+        end
       end
     end)
   end
 
-
+  def sendStats(statList) do
+    push(userSocket,"getStats",%{stats: statList})
+  end
 end

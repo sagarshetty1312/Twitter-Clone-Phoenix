@@ -29,6 +29,14 @@ defmodule DDHandler do
     elem(tuple,1)
   end
 
+  def getHomePageTweets(username) do
+    check = :ets.lookup(:myHome, username)
+    if check != [] do
+      [tuple] = :ets.lookup(:myHome, username)
+      elem(tuple,1)
+    end
+  end
+
   def insert_tag(tag,tweet) do
     [tuple] =
       if :ets.lookup(:mentionsHashtags, tag) == [] do
@@ -88,6 +96,7 @@ defmodule DDHandler do
   end
 
 
+<<<<<<< Updated upstream
 
 
   # def handle_cast({:tweet,userId,tweet},state) do
@@ -129,4 +138,33 @@ defmodule DDHandler do
   #   end)
   # end
 
+=======
+    mentionsList = Regex.scan(~r/\B@[a-zA-Z0-9_]+/, tweet) |> Enum.concat
+    mentionedUserIds = Enum.map(mentionsList,fn x -> String.slice(x,1..-1) end)
+    Enum.each(mentionsList, fn(mention) ->
+      # IO.puts "Inside mention list "<>mention
+      insert_tag(mention,tweet)
+    end)
+
+    validUserIds = checkForExistence(mentionedUserIds)
+    Enum.each(validUserIds, fn(toUser) ->
+      updateHome(toUser,tweet)
+    end)
+    ChatWeb.RoomChannel.tweetLive(tweet, validUserIds, userId)
+  end
+
+  def checkForExistence([]) do
+    []
+  end
+
+  def checkForExistence(mentionedUserIds) do
+    [head|tail] = mentionedUserIds
+    cond do
+      :ets.lookup(:allUsers, head) == [] -> checkForExistence(tail)
+      true -> [head | checkForExistence(tail)]
+    end
+  end
+
+
+>>>>>>> Stashed changes
 end

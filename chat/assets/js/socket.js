@@ -6,34 +6,8 @@ socket.connect()
  
 let channel = socket.channel('room:lobby', {}); // connect to chat "room"
 
-
-//testing how this works
-let ul = document.getElementById('msg-list');        // list of messages.
-let name = document.getElementById('name');          // name of message sender
-let msg = document.getElementById('msg');            // message input field
-
-// "listen" for the [Enter] keypress event to send a message:
-msg.addEventListener('keypress', function (event) {
-
-    if (event.keyCode == 13 && msg.value.length > 0) { // don't sent empty msg.
-        channel.push('shout', { // send the message to the server on "shout" channel
-            name: name.value,     // get value of "name" of person sending the message
-            message: msg.value    // get message text (value) from msg input field.
-        });
-        msg.value = '';         // reset the message input field for next message.
-    }
-});
-
-channel.on('shout', function (payload) { // listen to the 'shout' event
-    let li = document.createElement("li"); // create new list item DOM element
-    let name = payload.name || 'guest';    // get name from payload or set default
-    li.innerHTML = '<b>' + name + '</b>: ' + payload.message; // set li contents
-    ul.appendChild(li);                    // append to list
-});
-//testing hos this works
-
 var username = '';
-//functionality
+
 $(".rest").hide();
 
 //calls to server
@@ -65,10 +39,20 @@ document.getElementById("follow").addEventListener("click",function(){
 document.getElementById('queryButton').addEventListener('click',function(){
     let query = $('#queryTweet').val();
     $('#queryTweet').val('')
+    console.log(query);
     channel.push('searchQuery', {username: username, query: query});
 });
 
+document.getElementById("simulate").addEventListener("click", function () {
+    let numberUsers = $('#numberUsers').val();
+    let numberTweets = $('#numberTweets').val();
+    channel.push('simulate', {nUsers: numberUsers, nTweets: numberTweets});
+});
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
    
 
 
@@ -85,11 +69,16 @@ channel.on("Login",function(payload){
 channel.on("displayAllfoll",function(payload){
     let followersList = payload["followersList"]
     let followingList = payload["followingList"]
+    let tweetsList = payload["tweetsList"]
+    let username = payload["username"]
     followersList.map(function(follower){
         add_follower(follower)
     });
     followingList.map(function(following){
         add_following(following)
+    });
+    tweetsList.map(function(tweet){
+        addTweet(username,tweet)
     });
 
 });
@@ -125,17 +114,13 @@ function add_query_results(result) {
     var followingList = document.getElementById("query_display");
     var entry = document.createElement('li');
     entry.appendChild(document.createTextNode(result));
-    followingList.appendChild(result);
+    followingList.appendChild(entry);
 }
 
+
 channel.on("updateFollowingList",function(payload){
-    add_following(payload["newuser"]);
-    // let newUser = payload["newuser"]
-    // var followingList = document.getElementById("followingDisplay");
-    // var entry = document.createElement('li');
-    // entry.appendChild(document.createTextNode(newUser));
-    // followingList.appendChild(entry);
-})
+    add_following(payload["newuser"]); 
+});
 
 channel.on("queryResult",function(payload){
     let queryStatus = payload["status"];
@@ -146,6 +131,42 @@ channel.on("queryResult",function(payload){
     } else {
         window.alert(payload["response"])
     }
+});
+
+
+function addTweet(myUsername, tweet) {
+    var tweetList = document.getElementById("tweetsDisplay");
+    var entry = document.createElement('li');
+    var button = document.createElement("button");
+    button.innerHTML = "Retweet";
+    button.setAttribute("id","retweetButton");
+    button.setAttribute("tweet",tweet);
+    button.setAttribute("class", "btn btn-default btn-sm glyphicon glyphicon-retweet");
+    button.addEventListener("click",function(){
+        channel.push("retweet", { tweet: tweet, username: myUsername})
+    });
+    entry.appendChild(document.createTextNode(tweet));
+    entry.appendChild(button);
+    tweetList.appendChild(entry);    
+}
+
+channel.on("LiveTweet", function (payload) {
+    let myUsername = payload["username"];
+    let tweetText = payload["tweet"];
+    addTweet(myUsername, tweetText);
+});
+
+
+channel.on("simulation",function(payload) {
+    let responseList = payload["response"];
+    console.log(responseList)
+    var simDisplay = document.getElementById("simResult");
+    responseList.map(function (stat) {
+        var entry = document.createElement('li');
+        entry.appendChild(document.createTextNode(stat));
+        simDisplay.appendChild(entry)
+    });
+    document.getElementById("simulate").disabled = true;
 });
 
 

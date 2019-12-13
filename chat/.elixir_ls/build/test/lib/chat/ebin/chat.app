@@ -17,7 +17,9 @@
                         'Elixir.ChatWeb.PageView','Elixir.ChatWeb.Presence',
                         'Elixir.ChatWeb.RoomChannel','Elixir.ChatWeb.Router',
                         'Elixir.ChatWeb.Router.Helpers',
-                        'Elixir.ChatWeb.UserSocket','Elixir.DDHandler']},
+                        'Elixir.ChatWeb.UserController',
+                        'Elixir.ChatWeb.UserSocket','Elixir.ChatWeb.UserView',
+                        'Elixir.DDHandler','Elixir.Sim']},
               {registered,[]},
               {vsn,"0.1.0"},
               {mod,{'Elixir.Chat.Application',[]}}]}.

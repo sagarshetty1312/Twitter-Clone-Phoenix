@@ -5,23 +5,6 @@ defmodule ChatWeb.RoomChannel do
     {:ok,socket}
   end
 
-  # Channels can be used in a request/response fashion
-  # by sending replies to requests from the client
-  def handle_in("ping", payload, socket) do
-    {:reply, {:ok, payload}, socket}
-  end
-
-  # It is also common to receive messages from the client and
-  # broadcast to everyone in the current topic (room:lobby).
-  def handle_in("shout", payload, socket) do
-    broadcast socket, "shout", payload
-    {:noreply, socket}
-  end
-
-  # # Add authorization logic here as required.
-  # defp authorized(_payload) do
-  #   true
-  # end
 
   def handle_in("registerUser",payload,socket) do
     username = payload["username"]
@@ -56,7 +39,8 @@ defmodule ChatWeb.RoomChannel do
         #TODO display the tweets when logging in
         allFollowers = DDHandler.get_followers(username)
         allFollowing = DDHandler.get_following(username)
-        push(socket, "displayAllfoll", %{followersList: allFollowers,followingList: allFollowing})
+        allTweets = DDHandler.getHomePageTweets(username)
+        push(socket, "displayAllfoll", %{followersList: allFollowers,followingList: allFollowing,tweetsList: allTweets,username: username})
       else
         push(socket,"Login",%{status: "failed",response: "Incorrect Password"})
       end
@@ -96,16 +80,9 @@ defmodule ChatWeb.RoomChannel do
     {:noreply,socket}
   end
 
-  def handle_in("getAllTweets",payload,socket) do
-
-  end
 
   def handle_in("searchQuery",payload,socket) do
     query = payload["query"]
-    if String.at(query,0) == "@" do
-      #@ logic
-      IO.inspect query
-    end
     cond do
       String.at(query,0) in ["@","#"]  ->
         #@n# logic
@@ -117,6 +94,35 @@ defmodule ChatWeb.RoomChannel do
     {:noreply,socket}
   end
 
+<<<<<<< Updated upstream
 
 
+=======
+  def handle_in("simulate",payload,socket) do
+    nUsers = String.to_integer(payload["nUsers"])
+    nTweets = String.to_integer(payload["nTweets"])
+    responseString = Sim.start(nUsers, nTweets)
+    IO.inspect responseString
+    push(socket,"simulation",%{response: responseString})
+    {:noreply,socket}
+  end
+
+  def tweetLive(tweet, userList, _userId) do
+    Enum.each(userList, fn(toUser) ->
+      [tuple] =
+        if :ets.lookup(:userSockets, toUser) == [] do
+          [nil]
+        else
+          :ets.lookup(:userSockets, toUser)
+        end
+      if tuple !=nil do
+        userSocket = elem(tuple,1)
+        if userSocket !=[] do
+          push(userSocket,"LiveTweet",%{username: toUser,tweet: tweet})
+        end
+      end
+    end)
+  end
+
+>>>>>>> Stashed changes
 end

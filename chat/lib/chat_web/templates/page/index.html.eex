@@ -4,32 +4,27 @@
       <h1>Login/Sign Up</h1>
       <div class="container">
           <div class="card card-container">
-            <input type="text" id="inUsername" class="form-control" placeholder="Username" required autofocus>
-            <input type="password" id="inPassword" class="form-control" placeholder="Password" required>
+            <input type="text" id="inUsername" class="form-control" placeholder="Username" margin-bottom="10px" required autofocus>
+            <input type="password" id="inPassword" class="form-control" placeholder="Password" margin-bottom="10px" required>
             <button class="btn btn-lg btn-primary btn-block btn-signin" id="login">Sign in</button>
             <button class="btn btn-lg btn-primary btn-block btn-signin" id="register">Register</button>
           </div>
       </div>
   </div>
+  <div style="margin-top:50px;">
+    <input type="number" id="numberUsers" class="form-control" placeholder="Enter Number of users"  autofocus>
+    <input type="number" id="numberTweets" class="form-control" placeholder="Enter number of tweets">
+    <button class="btn btn-lg btn-primary btn-block btn-signin" id="simulate">Simulate</button>
+    <h4 id="simResultDiv"> Sim Result:</h4>
+      <ul id="simResult"></ul>
+  </div>
 </div>
 
 <div class="rest">
-  <div class="mainPage">
-    <ul id='msg-list' class='row' style='list-style: none; min-height:200px; padding: 10px;'></ul>
-    <div class="row">
-      <div class="col-xs-3">
-        <input type="text" id="name" class="form-control" placeholder="Your Name" autofocus>
-      </div>
-      <div class="col-xs-3">
-        <input type="text" id="msg" class="form-control" placeholder="Your Message">
-      </div>
-    </div>
-  </div>
-
   <div class="TweetAndFollow">
     <div class="row"> 
       <div class="col-xs-5">
-        <input type="text" id="tweetText" class="form-control" placeholder="Enter Tweet" autofocus>
+        <input type="text" id="tweetText" class="form-control" placeholder="Enter Tweet"  autofocus>
         <button class="btn btn-primary" id="tweet" type="submit">Tweet</button>
       </div>
       <div class="col-xs-5">
@@ -39,32 +34,34 @@
     </div>
   </div>
 
-  <div class="container">    
+  <div class="container" style="margin-top:50px;">    
     <div class="row">
-      <div class="col-sm-4">
-        <h4> Tweets: </h4> 
+      <div class="col-sm-7 overflow-auto" style="overflow-y: scroll; height:400px;"> 
+           <h4> Tweets: </h4>
            <ul id="tweetsDisplay"></ul>
       </div>
-      <div class="col-sm-4">
-        <h4> Followers: </h4>
+  
+      <div class="col-sm-4 overflow-auto " style="overflow-y: scroll; height:400px;">
+          <h4> Followers: </h4>
           <ul id="followersDisplay"></ul>
       </div>
-      <div class="col-sm-4">
-        <h4> Following: </h4>
+      
+      <div class="col-sm-4 overflow-auto" style="overflow-y: scroll; height:400px;">
+          <h4> Following: </h4>
           <ul id="followingDisplay"></ul>
       </div>
     </div>
   </div>
 
 
-  <div class="col-sm-4">
+  <div class="col-sm-6" style="margin-top:50px;">
     <div class="row">
       <input type="text" id="queryTweet" placeholder="Enter search query" required>
       <button type="button" class="btn btn-primary" id="queryButton">Query</button>
     </div>
-    <div class="col-sm-4">
-        <h5> Query Results: </h5> 
-           <ul id="query_display"></ul>
+    <div class="col-sm-9">
+      <h5> Query Results: </h5> 
+          <ul id="query_display"></ul>
     </div>
     
 

@@ -1,0 +1,63 @@
+<div class="phx-hero">
+  <h2>Hello World, from <%= @messenger %>!</h2>
+  <h1> I am here </h1>
+</div>
+
+<div >
+  <div class="mainPage">
+    <ul id='msg-list' class='row' style='list-style: none; min-height:200px; padding: 10px;'></ul>
+    <div class="row">
+      <div class="col-xs-3">
+        <input type="text" id="name" class="form-control" placeholder="Your Name" autofocus>
+      </div>
+      <div class="col-xs-3">
+        <input type="text" id="msg" class="form-control" placeholder="Your Message">
+      </div>
+    </div>
+  </div>
+
+  <div class="TweetAndFollow">
+    <div class="row"> 
+      <div class="col-xs-5">
+        <input type="text" id="tweetText" class="form-control" placeholder="Enter Tweet" autofocus>
+        <button class="btn btn-primary" id="tweet" type="submit">Tweet</button>
+      </div>
+      <div class="col-xs-5">
+        <input type="text" id="toFollowUsername" class="form-control" placeholder="Enter Username to follow" autofocus>
+        <button class="btn btn-primary" id="follow" type="submit">Follow</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">    
+    <div class="row">
+      <div class="col-sm-4 overflow-auto">
+        <h4> Tweets: </h4> 
+           <ul id="tweetsDisplay"></ul>
+      </div>
+      <div class="col-sm-4 overflow-auto">
+        <h4> Followers: </h4>
+          <ul id="followersDisplay"></ul>
+      </div>
+      <div class="col-sm-4 overflow-auto">
+        <h4> Following: </h4>
+          <ul id="followingDisplay"></ul>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-sm-6">
+    <div class="row">
+      <input type="text" id="queryTweet" placeholder="Enter search query" required>
+      <button type="button" class="btn btn-primary" id="queryButton">Query</button>
+    </div>
+    <div class="col-sm-4">
+        <h5> Query Results: </h5> 
+           <ul id="query_display"></ul>
+    </div>
+    
+
+  </div>
+
+</div>

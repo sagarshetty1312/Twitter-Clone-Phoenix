@@ -132,6 +132,13 @@ channel.on("LiveTweet",function(payload){
   addTweet(payload["tweet"])
 });
 
+channel.on("getStats",function(payload){
+  var tweetList = document.getElementById("tweetsDisplay");
+  var entry = document.createElement('li');
+  entry.appendChild(document.createTextNode(payload["stats"]));
+  tweetList.appendChild(entry);
+});
+
 function add_query_results(result) {
     var followingList = document.getElementById("query_display");
     var entry = document.createElement('li');

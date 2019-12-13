@@ -69,12 +69,15 @@ defmodule ChatWeb.RoomChannel do
   def handle_in("tweet",payload,socket) do
     username = payload["username"]
     tweet = payload["tweet"]
-    DDHandler.handle_tweet(username, tweet)
+    DDHandler.handle_tweet(username, tweet<>" -Tweet by #{username}")
     {:noreply,socket}
   end
 
   def handle_in("retweet",payload,socket) do
-
+    username = payload["username"]
+    tweet = payload["tweet"]
+    DDHandler.handle_tweet(username, tweet<>" -Retweet by #{username}")
+    {:noreply,socket}
   end
 
   def handle_in("addFollower",payload,socket) do

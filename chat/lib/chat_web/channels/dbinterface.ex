@@ -96,20 +96,19 @@ defmodule DDHandler do
 
 
   def handle_tweet(userId,tweet) do
-    actualTweet = tweet<>" -Tweet by #{userId}"
     [tuple] = :ets.lookup(:tweetsMade, userId)
     tweetsList = elem(tuple,1)
-    updatedTweetsList = [actualTweet | tweetsList]
+    updatedTweetsList = [tweet | tweetsList]
     :ets.insert(:tweetsMade,{userId,updatedTweetsList})
 
-    updateHome(userId,actualTweet)
-    ChatWeb.RoomChannel.tweetLive(actualTweet, [userId], userId)
+    updateHome(userId,tweet)
+    ChatWeb.RoomChannel.tweetLive(tweet, [userId], userId)
 
     followers = get_followers(userId)
     Enum.each(followers, fn(toUser1) ->
-      updateHome(toUser1,actualTweet)
+      updateHome(toUser1,tweet)
     end)
-    ChatWeb.RoomChannel.tweetLive(actualTweet, followers, userId)
+    ChatWeb.RoomChannel.tweetLive(tweet, followers, userId)
 
     #hashtags in tweet
     hashtagsList = Regex.scan(~r/\B#[a-zA-Z0-9_]+/, tweet) |> Enum.concat
@@ -118,13 +117,15 @@ defmodule DDHandler do
     end)
 
     mentionsList = Regex.scan(~r/\B@[a-zA-Z0-9_]+/, tweet) |> Enum.concat
+    mentionedUserIds = Enum.map(mentionsList,fn x -> String.slice(x,1..-1) end)
     Enum.each(mentionsList, fn(mention) ->
+      IO.puts "Inside mention list "<>mention
       insert_tag(mention,tweet)
     end)
 
-    validUserIds = checkForExistence(mentionsList)
+    validUserIds = checkForExistence(mentionedUserIds)
     Enum.each(validUserIds, fn(toUser) ->
-      updateHome(toUser,actualTweet)
+      updateHome(toUser,tweet)
     end)
     ChatWeb.RoomChannel.tweetLive(tweet, validUserIds, userId)
   end
@@ -136,7 +137,7 @@ defmodule DDHandler do
   def checkForExistence(mentionedUserIds) do
     [head|tail] = mentionedUserIds
     cond do
-      :ets.lookup(:allUsers, head) == [] -> checkForExistence(tail)
+      :ets.lookup(:userSockets, head) == [] -> checkForExistence(tail)
       true -> [head | checkForExistence(tail)]
     end
   end

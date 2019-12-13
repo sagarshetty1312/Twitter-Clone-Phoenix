@@ -17,6 +17,7 @@ defmodule ChatWeb.RoomChannel do
         :ets.insert(:following,{username,[]})
         :ets.insert(:followers,{username,[]})
         :ets.insert(:tweetsMade,{username,[]})
+        :ets.insert(:myHome,{username,[]})
         "User Registered"
       else
         "User already present"
@@ -52,12 +53,16 @@ defmodule ChatWeb.RoomChannel do
   def handle_in("tweet",payload,socket) do
     username = payload["username"]
     tweet = payload["tweet"]
-
+    IO.inspect tweet
+    DDHandler.handle_tweet(username, tweet<>" -Tweet by #{username}")
     {:noreply,socket}
   end
 
   def handle_in("retweet",payload,socket) do
-
+    username = payload["username"]
+    tweet = payload["tweet"]
+    DDHandler.handle_tweet(username, tweet<>" -Retweet by #{username}")
+    {:noreply,socket}
   end
 
   def handle_in("addFollower",payload,socket) do
@@ -94,10 +99,6 @@ defmodule ChatWeb.RoomChannel do
     {:noreply,socket}
   end
 
-<<<<<<< Updated upstream
-
-
-=======
   def handle_in("simulate",payload,socket) do
     nUsers = String.to_integer(payload["nUsers"])
     nTweets = String.to_integer(payload["nTweets"])
@@ -124,5 +125,4 @@ defmodule ChatWeb.RoomChannel do
     end)
   end
 
->>>>>>> Stashed changes
 end

@@ -20,7 +20,7 @@ defmodule Sim do
     startTime = System.system_time(:millisecond)
     tweetRandom(userList,nTweets-2)
     tweetwithHashtag(userList,"#COP5615 is great")
-    usersMentioned = tweetToRandUser(userList,userList)
+    _usersMentioned = tweetToRandUser(userList,userList)
     timeDiff = System.system_time(:millisecond) - startTime
     stat3 = "Every user tweeted #{nTweets} times.Total number of tweets: #{(numUsers)*nTweets}. Completed in #{timeDiff}ms"
     [stat1,stat2,stat3]

@@ -21,6 +21,7 @@
 </div>
 
 <div class="rest">
+<h3 id="mainHeading"> Welcome to your Home Page: </h3>
   <div class="TweetAndFollow">
     <div class="row"> 
       <div class="col-xs-5">

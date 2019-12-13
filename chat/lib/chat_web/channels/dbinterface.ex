@@ -142,6 +142,7 @@ defmodule DDHandler do
     []
   end
 
+
   def checkForExistence(mentionedUserIds) do
     [head|tail] = mentionedUserIds
     cond do

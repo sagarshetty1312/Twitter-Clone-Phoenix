@@ -53,7 +53,6 @@ defmodule ChatWeb.Endpoint do
     :ets.new(:userTable,[:set,:public,:named_table])
     :ets.new(:userSockets,[:set,:public,:named_table])
     :ets.new(:myHome,[:set,:public,:named_table])
-    
     if config[:load_from_system_env] do
       port = System.get_env("PORT") || 4000
       {:ok, Keyword.put(config, :http, [:inet6, port: port])}

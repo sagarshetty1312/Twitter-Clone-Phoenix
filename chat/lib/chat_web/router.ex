@@ -17,6 +17,8 @@ defmodule ChatWeb.Router do
     pipe_through :browser
     get "/", PageController, :index
     get "/hello/:messenger", HelloController, :show
+
+    get "/home/:username", UserController, :home
   end
 
   # Other scopes may use custom stacks.

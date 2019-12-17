@@ -5,23 +5,6 @@ defmodule ChatWeb.RoomChannel do
     {:ok,socket}
   end
 
-  # Channels can be used in a request/response fashion
-  # by sending replies to requests from the client
-  def handle_in("ping", payload, socket) do
-    {:reply, {:ok, payload}, socket}
-  end
-
-  # It is also common to receive messages from the client and
-  # broadcast to everyone in the current topic (room:lobby).
-  def handle_in("shout", payload, socket) do
-    broadcast socket, "shout", payload
-    {:noreply, socket}
-  end
-
-  # # Add authorization logic here as required.
-  # defp authorized(_payload) do
-  #   true
-  # end
 
   def handle_in("registerUser",payload,socket) do
     username = payload["username"]
@@ -46,7 +29,7 @@ defmodule ChatWeb.RoomChannel do
   def handle_in("loginUser",payload,socket) do
     username = payload["username"]
     password = payload["password"]
-    check = :ets.lookup(:userTable, username) |> IO.inspect
+    check = :ets.lookup(:userTable, username)
     if check == [] do
       push(socket, "Login", %{status: "failed", response: "User not found. Login failed."})
     else
@@ -57,7 +40,8 @@ defmodule ChatWeb.RoomChannel do
         #TODO display the tweets when logging in
         allFollowers = DDHandler.get_followers(username)
         allFollowing = DDHandler.get_following(username)
-        push(socket, "displayAllfoll", %{followersList: allFollowers,followingList: allFollowing})
+        allTweets = DDHandler.getHomePageTweets(username)
+        push(socket, "displayAllfoll", %{followersList: allFollowers,followingList: allFollowing,tweetsList: allTweets,username: username})
       else
         push(socket,"Login",%{status: "failed",response: "Incorrect Password"})
       end
@@ -69,6 +53,7 @@ defmodule ChatWeb.RoomChannel do
   def handle_in("tweet",payload,socket) do
     username = payload["username"]
     tweet = payload["tweet"]
+    IO.inspect tweet
     DDHandler.handle_tweet(username, tweet<>" -Tweet by #{username}")
     {:noreply,socket}
   end
@@ -89,27 +74,20 @@ defmodule ChatWeb.RoomChannel do
       usernameSocket = DDHandler.getSocket(username)
       toFollowUsernameSocket =  DDHandler.getSocket(toFollowUsername)
       if usernameSocket != nil do
-        #IO.inspect toFollowUsername
+        IO.inspect toFollowUsername
         push(usernameSocket,"updateFollowingList",%{newuser: toFollowUsername})
       end
       if toFollowUsernameSocket != nil do
-        #IO.inspect username
+        IO.inspect username
         push(toFollowUsernameSocket,"updateFollowersList",%{newuser: username})
       end
     end
     {:noreply,socket}
   end
 
-  def handle_in("getAllTweets",payload,socket) do
-
-  end
 
   def handle_in("searchQuery",payload,socket) do
     query = payload["query"]
-    if String.at(query,0) == "@" do
-      #@ logic
-      IO.inspect query
-    end
     cond do
       String.at(query,0) in ["@","#"]  ->
         #@n# logic
@@ -118,6 +96,15 @@ defmodule ChatWeb.RoomChannel do
       true ->
         push(socket,"queryResult",%{status: "fail",response: "Invalid Query. Please enter a query with a hashtag or mention"})
     end
+    {:noreply,socket}
+  end
+
+  def handle_in("simulate",payload,socket) do
+    nUsers = String.to_integer(payload["nUsers"])
+    nTweets = String.to_integer(payload["nTweets"])
+    responseString = Sim.start(nUsers, nTweets)
+    IO.inspect responseString
+    push(socket,"simulation",%{response: responseString})
     {:noreply,socket}
   end
 
@@ -138,7 +125,4 @@ defmodule ChatWeb.RoomChannel do
     end)
   end
 
-  def sendStats(statList) do
-    push(userSocket,"getStats",%{stats: statList})
-  end
 end

@@ -1,8 +1,8 @@
 # Project 4.2 - Twitter-Clone using phoenix
 
 ## Members
-Jayan, Milind - 8168 9617
-Jayanth Shetty, Sagar - 4351 7929
+Jayan, Milind
+Jayanth Shetty, Sagar
 
 ## How to run
 - Extract the project from 'Jayan_JayanthShetty.zip' and go to the home folder 'Jayan_JayanthShetty\chat'
